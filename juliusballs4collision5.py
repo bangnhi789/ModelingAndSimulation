@@ -17,8 +17,21 @@ class Table:
         self.TableRect = pygame.Rect (50,50,700,480)
     def draw (self,window):
         pygame.draw.rect (window,pygame.Color("white"),self.TableRect,4)
-    def CheckCollision(self):
-        pass
+    def CheckCollision(self,ball):
+        #check top
+        if (ball.y-ball.size < self.TableRect.top):
+             ball.velocity_y*=-1
+        #checkleft
+        if (ball.x-ball.size < self.TableRect.left):
+             ball.velocity_x*=-1
+        # checkright
+        if (ball.x+ball.size > self.TableRect.right):
+             ball.velocity_x*=-1
+        #checkbottom
+        if (ball.y+ball.size > self.TableRect.bottom):
+             ball.velocity_y*=-1
+             
+        
 
 
 
@@ -126,15 +139,15 @@ def CollideReaction (ball1, ball2):
         #normal_mouse_y *=-1
 
         #move ball away from cursor, using the inverted normal
-        ball2.velocity_x += normal_mouse_x * 2.5
-        ball2.velocity_y += normal_mouse_y * 2.5
+        ball2.velocity_x += normal_x * 2.5
+        ball2.velocity_y += normal_y * 2.5
 
       
 
 
-motherball = Mother_Ball(50,300)
+motherball = Mother_Ball(100,300)
 list_of_balls = [Ball(400,300),Ball(450,350),Ball(450,250),Ball(500,200),Ball(500,300),Ball(500,400)]
-
+PoolTable=Table()
 
 while True:
     for event in pygame.event.get():
@@ -187,27 +200,27 @@ while True:
         motherball.velocity_x += normal_mouse_x * 2.5
         motherball.velocity_y += normal_mouse_y * 2.5
 
-    motherball.update()
-    if (checkcollision(motherball,list_of_balls[0])==True):
-        CollideReaction(motherball,list_of_balls[0])
-    if (checkcollision(motherball,list_of_balls[1])==True):
-        CollideReaction(motherball,list_of_balls[1])
-    if (checkcollision(motherball,list_of_balls[2])==True):
-        CollideReaction(motherball,list_of_balls[2])
-    if (checkcollision(motherball,list_of_balls[3])==True):
-        CollideReaction(motherball,list_of_balls[3])
-    if (checkcollision(motherball,list_of_balls[4])==True):
-        CollideReaction(motherball,list_of_balls[4])
-    if (checkcollision(motherball,list_of_balls[5])==True):
-        CollideReaction(motherball,list_of_balls[5])
-      
-        
+  
+    for ball in list_of_balls:
+        ball.update()
+        if (checkcollision (motherball,ball)==True):
+            CollideReaction (motherball,ball)
 
+    for ball1 in list_of_balls:
+            for ball2 in list_of_balls:
+                if (ball1!=ball2):
+                    if (checkcollision (ball1,ball2)):
+                        CollideReaction (ball1,ball2)
+                        
+    PoolTable.CheckCollision (motherball)                    
+
+    for ball in list_of_balls:
+         PoolTable.CheckCollision (ball)
     
     motherball.update()
     motherball.draw(window)
 
-    PoolTable=Table()
+   
 
 
     for ball in list_of_balls:
